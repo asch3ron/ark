@@ -1,0 +1,51 @@
+html, body {
+  height: 100%; }
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-weight: 100; }
+
+.container_title {
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle; }
+
+.container_title .content {
+  text-align: center;
+  display: inline-block; }
+
+.container_title .title {
+  font-size: 96px; }
+
+td {
+  vertical-align: middle !important; }
+  td input, td select {
+    color: black !important;
+    font-weight: 400 !important; }
+
+#content {
+  padding-top: 20px;
+  padding-bottom: 20px; }
+
+#menu {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #4e5d6c;
+  position: fixed; }
+  #menu a.list-group-item.active, #menu a.list-group-item:focus {
+    background-color: #d9534f; }
+  #menu .icon {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: #485563; }
+    #menu .icon svg {
+      width: 50%;
+      max-height: 250px; }
+    #menu .icon .title {
+      font-weight: 400; }
+
+/*# sourceMappingURL=app.css.map */
