@@ -169,7 +169,6 @@ class Server extends Command
         $output = '';
         foreach ($commands as $command)
         {
-            $command .= ' 2>&1';
             $this->info($command);
 
             $output .= shell_exec( escapeshellcmd( $command ) );
