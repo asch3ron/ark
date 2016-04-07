@@ -94,17 +94,6 @@ class Server extends CoreCommand
         $this->line($result);
     }
 
-    private function detectedOutputError( $output )
-    {
-        if (empty($result))
-            return true;
-
-        if (false !== strpos($output, 'sh:'))
-            return true;
-
-        return false;
-    }
-
     private function stop()
     {
         if (false === $this->getGameServer()->isConnected())
@@ -115,6 +104,7 @@ class Server extends CoreCommand
         {
             $this->info('Stoping the server');
 
+            $this->getServer()->addLog('Server saving and shutdown');
             $this->getGameServer()->shutdown();
         }
     }
@@ -129,14 +119,18 @@ class Server extends CoreCommand
             './steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
         ];
 
+        $this->getServer()->addLog('Server starting to update ... (it can take a while)');
         if (false === $this->getGameServer()->isConnected())
+        {
             $this->line($this->executeCommands( $commands ));
+        }
         else
         {
             $this->stop();
-            $this->executeCommands( $commands );
+            $this->line($this->executeCommands( $commands ));
             $this->start();
         }
+        $this->getServer()->addLog('Server finishing to update !');
     }
 
     private function status()
