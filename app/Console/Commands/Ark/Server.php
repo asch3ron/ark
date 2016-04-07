@@ -99,14 +99,12 @@ class Server extends Command
             $launch_command
         ];
 
-        $server->state = 'launching';
-        $server->save();
+        $server->setState('launching');
 
         $result = $this->executeCommands( $commands );
 
         var_dump($result);
-        $server->state = $this->detectedOutputError($result) ? 'ko' : 'ok';
-        $server->save();
+        $server->setState($this->detectedOutputError($result) ? 'ko' : 'ok');
     }
 
     private function detectedOutputError( $output )
