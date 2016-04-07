@@ -74,7 +74,6 @@ class Server extends CoreCommand
             ->get();
 
         $configurations = array_map(function($item){
-            dd($item->type);
             return $item->name . '=' . $item->default;
         }, $configurations);
 
