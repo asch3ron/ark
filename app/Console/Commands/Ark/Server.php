@@ -3,6 +3,7 @@
 namespace Ark\Console\Commands\Ark;
 
 use Illuminate\Console\Command;
+use DB;
 
 class Server extends Command
 {
@@ -20,6 +21,7 @@ class Server extends Command
      */
     protected $description = 'Command description';
 
+    private $server = null;
     /**
      * Create a new command instance.
      *
@@ -38,7 +40,15 @@ class Server extends Command
     public function handle()
     {
         $state = $this->argument('state');
-        $this->server = new \Ark\Ark();
+        try
+        {
+            $this->server = new \Ark\Ark();
+            $this->server->setLogger( $this );
+        }
+        catch (\Exception $e)
+        {
+
+        }
 
         if (true === method_exists($this, $state))
         {
@@ -64,33 +74,64 @@ class Server extends Command
             '-usecache'
         ];
 
-        $configurations = \Ark\Models\Configuration::all();
+        $id_server  = 1;
+
+        $server     = \Ark\Models\Server::find( $id_server );
+
+        // $configurations = \Ark\Models\Server\Configuration::all();
+        $configurations = DB::table('ark_configurations')
+            ->leftJoin('ark_server_configuration', 'ark_server_configuration.id_configuration', '=', 'ark_configurations.id')
+            ->select('ark_configurations.*', 'ark_server_configuration.value')
+            ->where('ark_server_configuration.id_server', '=', $server->id_server)
+            ->get();
 
         $configurations = array_map(function($item){
-            return $item['name'] . '=' . $item['default'];
-        }, $configurations->toArray());
+            return $item->name . '=' . $item->default;
+        }, $configurations);
 
         $launch_command = './ShooterGameServer ' . env('ARK_MAP') . '?listen'
+                        . '?SessionName=' . $server->name
                         . implode('?', $configurations) . implode(' ', $params);
 
         $commands = [
-            'cd ' . env('ARK_PATH') . '/ShooterGame/Binaries/Linux/',
+            'cd ' . $server->path . '/ShooterGame/Binaries/Linux/',
             'ulimit -n 100000',
             $launch_command
         ];
 
-        dd($commands);
-        /*
-            #!/bin/bash
-            cd /home/steam/servers/ark/ShooterGame/Binaries/Linux/
-            ulimit -n 100000
-            ./ShooterGameServer TheIsland?listen?Message="coucou les aventuriers!"?SessionName="Les survivants de l'arche"?alwaysNotifyPlayerJoined=true?alwaysNotifyPlayerLeft=true?ShowMapPlayerLocation=true?MaxPlayers=6?proximityChat=false?ServerPassword=aaaaa?ServerAdminPassword=bbbbb -server -log -servergamelog
-         */
+        $server->state = 'launching';
+        $server->save();
+
+        $result = $this->executeCommands( $commands );
+
+        var_dump($result);
+        $server->state = $this->detectedOutputError($result) ? 'ko' : 'ok';
+        $server->save();
+    }
+
+    private function detectedOutputError( $output )
+    {
+        if (empty($result))
+            return true;
+
+        if (false !== strpos($output, 'sh:'))
+            return true;
+
+        return false;
     }
 
     private function stop()
     {
+        if (false === $this->server->isConnected())
+        {
+            $this->warn('Server already stop');
+        }
+        else
+        {
+            $this->info('Stoping the server');
 
+            $this->server->shutdown();
+        }
     }
 
     private function update()
@@ -102,10 +143,42 @@ class Server extends Command
             'cd steamcmd/',
             './steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
         ];
+
+        if (false === $this->server->isConnected())
+            $this->executeCommands( $commands );
+        else
+        {
+            $this->stop();
+            $this->executeCommands( $commands );
+            $this->start();
+        }
     }
 
     private function status()
     {
+        try
+        {
+            $this->server->getPlayers();
+        }
+        catch (\Exception $e)
+        {
+            $this->line('Server is down.');
+        }
+    }
 
+    private function executeCommands( $commands )
+    {
+        $output = '';
+        foreach ($commands as $command)
+        {
+            $command .= ' 2>&1';
+            $this->info($command);
+
+            $output .= shell_exec( escapeshellcmd( $command ) );
+
+            // $this->line($output);
+        }
+
+        return $output;
     }
 }

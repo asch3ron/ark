@@ -25,9 +25,39 @@ class ServerController extends Controller {
 
     public function status()
     {
-        $server = new \Ark\Ark();
+        $server     = new \Ark\Ark();
+        $db_server  = \Ark\Models\Server::find( 1 );
 
-        $server->getPlayers();
+        $info = [
+            'name'              => $db_server->name,
+            'ip'                => $db_server->ip,
+            'port'              => $db_server->port,
+            'state'             => $db_server->state,
+        ];
+
+        if (false === $server->isConnected())
+            return $info;
+
+        $configurations     = [];
+        $configs            = DB::table('ark_configurations')
+            ->leftJoin('ark_server_configuration', 'ark_server_configuration.id_configuration', '=', 'ark_configurations.id')
+            ->select('ark_configurations.*', 'ark_server_configuration.value')
+            ->where('ark_server_configuration.id_server', '=', $db_server->id_server)
+            ->get();
+
+        foreach ($configs as $config)
+        {
+            $configurations[ $config->name ] = $config->value;
+        }
+
+        $players        = $server->getPlayers();
+
+        $info += [
+            'nb_players'        => ('No Players Connected' === $players ? 0 : (int) $players),
+            'max_players'       => (int) $configurations['MaxPlayers'],
+        ];
+
+        return $info;
         // try
         // {
         //     // setup the messenger
