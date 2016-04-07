@@ -55,7 +55,8 @@ class Ark
 
 	public function ping()
 	{
-		return $this->action('ping') === 'Server received, But no response!!';
+		$action = $this->action('ping');
+		return ($action === 'Server received, But no response!!' || empty($action));
 	}
 
 	public function save()
