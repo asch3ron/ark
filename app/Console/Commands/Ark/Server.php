@@ -94,9 +94,9 @@ class Server extends Command
                         . implode('?', $configurations) . implode(' ', $params);
 
         $commands = [
-            'cd ' . $server->path . '/ShooterGame/Binaries/Linux/',
             'ulimit -n 100000',
-            $launch_command
+            'cd ' . $server->path . '/ShooterGame/Binaries/Linux/',
+            $launch_command . '&'
         ];
 
         $server->setState('launching');
@@ -139,7 +139,7 @@ class Server extends Command
 
         $commands = [
             'cd steamcmd/',
-            'cd steamcmd/./steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
+            './steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
         ];
 
         if (false === $this->server->isConnected())
