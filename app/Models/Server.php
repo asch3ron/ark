@@ -22,7 +22,7 @@ class Server extends Model
 
     public function addLog( $message )
     {
-    	\Ark\Models\Server\Log::firstOrCreate([
+    	\Ark\Models\Server\Log::create([
             'id_server' => $this->id_server,
             'message'  	=> $message
         ]);
