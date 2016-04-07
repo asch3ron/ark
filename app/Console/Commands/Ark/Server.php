@@ -74,11 +74,11 @@ class Server extends CoreCommand
             ->get();
 
         $configurations = array_map(function($item){
-            return $item->name . '=' . $item->default;
+            return $item->name . '=' . escapeshellcmd($item->value);
         }, $configurations);
 
         $launch_command = './ShooterGameServer ' . env('ARK_MAP') . '?listen'
-                        . '?SessionName="' . $this->getServer()->name . '"'
+                        . '?SessionName="' . $this->getServer()->name . '"?'
                         . implode('?', $configurations) . implode(' ', $params);
 
         $commands = [
@@ -147,11 +147,6 @@ class Server extends CoreCommand
 
     private function executeCommands( $commands )
     {
-        // escape each command
-        $commands = array_map(function($item){
-            return escapeshellcmd( $item );
-        }, $commands);
-
         $command = implode(' && ', $commands);
 
         $this->info($command);
