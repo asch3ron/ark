@@ -53,6 +53,11 @@ class Ark
 		return $this->action('listplayers');
 	}
 
+	public function ping()
+	{
+		return $this->action('ping') === 'Server received, But no response!!';
+	}
+
 	public function save()
 	{
 		return $this->action('admincheat saveworld');

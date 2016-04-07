@@ -75,6 +75,11 @@ class Install extends Command
             ]);
 		}
 
+        if ($this->confirm('Do you want to install crontab configuration "php artisan ark:cron" ?', 'yes'))
+        {
+            echo shell_exec('php artisan ark:cron');
+        }
+
 		if ($this->confirm('Do you want import ARK server configuration from `http://ark.gamepedia.com/Server_Configuration` ?', 'yes'))
     	{
 		   	$this->loadConfiguration();

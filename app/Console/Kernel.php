@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\Ark\Server::class,
         Commands\Ark\Install::class,
         Commands\Ark\Changelog::class,
+        Commands\Ark\Cron::class,
+        Commands\Ark\Ping::class,
     ];
 
     /**

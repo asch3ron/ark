@@ -2,10 +2,9 @@
 
 namespace Ark\Console\Commands\Ark;
 
-use Illuminate\Console\Command;
 use DB;
 
-class Server extends Command
+class Server extends CoreCommand
 {
     /**
      * The name and signature of the console command.
@@ -40,15 +39,8 @@ class Server extends Command
     public function handle()
     {
         $state = $this->argument('state');
-        try
-        {
-            $this->server = new \Ark\Ark();
-            $this->server->setLogger( $this );
-        }
-        catch (\Exception $e)
-        {
 
-        }
+        $this->retrieveServer();
 
         if (true === method_exists($this, $state))
         {
@@ -74,37 +66,34 @@ class Server extends Command
             '-usecache'
         ];
 
-        $id_server  = 1;
-
-        $server     = \Ark\Models\Server::find( $id_server );
-
         // $configurations = \Ark\Models\Server\Configuration::all();
         $configurations = DB::table('ark_configurations')
             ->leftJoin('ark_server_configuration', 'ark_server_configuration.id_configuration', '=', 'ark_configurations.id')
             ->select('ark_configurations.*', 'ark_server_configuration.value')
-            ->where('ark_server_configuration.id_server', '=', $server->id_server)
+            ->where('ark_server_configuration.id_server', '=', $this->getServer()->id_server)
             ->get();
 
         $configurations = array_map(function($item){
+            dd($item->type);
             return $item->name . '=' . $item->default;
         }, $configurations);
 
         $launch_command = './ShooterGameServer ' . env('ARK_MAP') . '?listen'
-                        . '?SessionName=' . $server->name
+                        . '?SessionName="' . $this->getServer()->name . '"'
                         . implode('?', $configurations) . implode(' ', $params);
 
         $commands = [
             'ulimit -n 100000',
-            'cd ' . $server->path . '/ShooterGame/Binaries/Linux/',
-            $launch_command . '&'
+            'cd ' . $this->getServer()->path . '/ShooterGame/Binaries/Linux/',
+            $launch_command . ' &'
         ];
 
-        $server->setState('launching');
+        $this->getServer()->setState('launching');
 
         $result = $this->executeCommands( $commands );
 
         var_dump($result);
-        $server->setState($this->detectedOutputError($result) ? 'ko' : 'ok');
+        // $this->getServer()->setState($this->detectedOutputError($result) ? 'ko' : 'ok');
     }
 
     private function detectedOutputError( $output )
@@ -120,7 +109,7 @@ class Server extends Command
 
     private function stop()
     {
-        if (false === $this->server->isConnected())
+        if (false === $this->getGameServer()->isConnected())
         {
             $this->warn('Server already stop');
         }
@@ -128,7 +117,7 @@ class Server extends Command
         {
             $this->info('Stoping the server');
 
-            $this->server->shutdown();
+            $this->getGameServer()->shutdown();
         }
     }
 
@@ -142,7 +131,7 @@ class Server extends Command
             './steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
         ];
 
-        if (false === $this->server->isConnected())
+        if (false === $this->getGameServer()->isConnected())
             $this->executeCommands( $commands );
         else
         {
@@ -156,7 +145,7 @@ class Server extends Command
     {
         try
         {
-            $this->server->getPlayers();
+            $this->getGameServer()->getPlayers();
         }
         catch (\Exception $e)
         {
@@ -166,7 +155,7 @@ class Server extends Command
 
     private function executeCommands( $commands )
     {
-        $command = implode(' && ', $commands);
+        $command = implode(';', $commands);
 
         $this->info($command);
         $output = shell_exec( escapeshellcmd( $command ) );
