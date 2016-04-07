@@ -139,7 +139,7 @@ class Server extends Command
 
         $commands = [
             'cd steamcmd/',
-            './steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
+            'cd steamcmd/./steamcmd.sh +login anonymous +force_install_dir ' . env('ARK_PATH') . ' +app_update "376030 validate" +quit'
         ];
 
         if (false === $this->server->isConnected())
@@ -166,15 +166,10 @@ class Server extends Command
 
     private function executeCommands( $commands )
     {
-        $output = '';
-        foreach ($commands as $command)
-        {
-            $this->info($command);
+        $command = implode(' && ', $commands);
 
-            $output .= shell_exec( escapeshellcmd( $command ) );
-
-            // $this->line($output);
-        }
+        $this->info($command);
+        $output = shell_exec( escapeshellcmd( $command ) );
 
         return $output;
     }
