@@ -37,9 +37,14 @@ class Install extends Command
      */
     public function handle()
     {
-    	if ($this->confirm('Do you want to run "composer install" ?'))
+        if ($this->confirm('Do you want to run migrations "php artisan migrate" ?', 'yes'))
+        {
+            echo shell_exec('php artisan migrate');
+        }
+
+    	if ($this->confirm('Do you want to run "composer install" ?', 'yes'))
     	{
-		   	shell_exec('composer install');
+		   	echo shell_exec('composer install');
 		}
 
 		if ($this->confirm('Do you want to configure your .env ?', 'yes'))
