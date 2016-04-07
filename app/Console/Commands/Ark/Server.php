@@ -91,8 +91,7 @@ class Server extends CoreCommand
 
         $result = $this->executeCommands( $commands );
 
-        var_dump($result);
-        // $this->getServer()->setState($this->detectedOutputError($result) ? 'ko' : 'ok');
+        $this->line($result);
     }
 
     private function detectedOutputError( $output )
@@ -131,7 +130,7 @@ class Server extends CoreCommand
         ];
 
         if (false === $this->getGameServer()->isConnected())
-            $this->executeCommands( $commands );
+            $this->line($this->executeCommands( $commands ));
         else
         {
             $this->stop();
@@ -154,10 +153,15 @@ class Server extends CoreCommand
 
     private function executeCommands( $commands )
     {
-        $command = implode(';', $commands);
+        // escape each command
+        $commands = array_map(function($item){
+            return escapeshellcmd( $item );
+        }, $commands);
+
+        $command = implode(' && ', $commands);
 
         $this->info($command);
-        $output = shell_exec( escapeshellcmd( $command ) );
+        $output = shell_exec( $command );
 
         return $output;
     }

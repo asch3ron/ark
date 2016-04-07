@@ -53,7 +53,7 @@ class Ping extends CoreCommand
         switch ($this->getServer()->state)
         {
             case 'ko' : break;
-            case 'lanching' :
+            case 'launching' :
                 if (true === $server_up)
                 {
                     $this->getServer()->setState('ok');
@@ -61,8 +61,8 @@ class Ping extends CoreCommand
                 }
                 else
                 {
-                    $this->error('Server failed to start :(');
                     // check if time > 15 min set KO
+                    // $this->error('Server failed to start :(');
                 }
             break;
             default :
