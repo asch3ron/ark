@@ -13,13 +13,19 @@ class Ark
 	private $is_connected = false;
 	private $client = null;
 	private $logger = null;
+	private $_server;
 
 	CONST NO_CONNECTED = 'Connection failed.';
 
 	public function __construct()
 	{
-		$this->ip 		= '62.210.97.105';
-		$this->port 	= 32330;
+
+        $id_server      = 1;
+        $this->_server  = \Ark\Models\Server::find( $id_server );
+        // get password
+
+		$this->ip 		= $this->_server->ip;
+		$this->port 	= $this->_server->port;
 		$this->password = 'bbbbb';
 
 		$this->connect();

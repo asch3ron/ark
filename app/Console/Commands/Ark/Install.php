@@ -84,6 +84,8 @@ class Install extends Command
     	{
 		   	$this->loadConfiguration();
 		}
+
+        $this->info(shell_exec('php artisan key:generate'));
     }
 
     private function loadConfiguration()
