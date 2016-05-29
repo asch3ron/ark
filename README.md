@@ -31,9 +31,8 @@ php artisan ark:cron
 Recap of all commands:
 ```
 composer install
-create database ark;
 mysql -u root -e "create database ark;" -proot
-cp .env.example .env
+cp .env.example .env && nano .env
 php artisan ark:install
 php artisan ark:cron
 ```

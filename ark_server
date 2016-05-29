@@ -1,0 +1,2 @@
+*/5  *   *   *   * root    /usr/bin/php /Users/ascheron/Documents/development/ark/artisan ark:ping
+*/30  *   *   *   * root    /usr/bin/php /Users/ascheron/Documents/development/ark/artisan ark:changelog
