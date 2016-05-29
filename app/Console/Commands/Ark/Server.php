@@ -11,7 +11,7 @@ class Server extends CoreCommand
      *
      * @var string
      */
-    protected $signature = 'ark:server {state}';
+    protected $signature = 'ark:server {state} {id_server}';
 
     /**
      * The console command description.
@@ -39,6 +39,8 @@ class Server extends CoreCommand
     public function handle()
     {
         $state = $this->argument('state');
+
+        $this->setIDServer( $this->argument('id_server') );
 
         $this->retrieveServer();
 

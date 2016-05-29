@@ -14,19 +14,15 @@ class ServerController extends Controller {
 
     public function all()
     {
-        return view('server', ['servers' => []]);
+        $all = \Ark\Models\Server::all();
+
+        return view('server', ['servers' => $all]);
     }
 
-    public function restart()
+    public function status( $id_server )
     {
-        $this->dispatch(new Server('stop'));
-        $this->dispatch(new Server('start'));
-    }
-
-    public function status()
-    {
-        $server     = new \Ark\Ark();
-        $db_server  = \Ark\Models\Server::find( 1 );
+        $server     = new \Ark\Ark( $id_server );
+        $db_server  = \Ark\Models\Server::find( $id_server );
 
         $info = [
             'name'              => $db_server->name,
@@ -58,34 +54,27 @@ class ServerController extends Controller {
         ];
 
         return $info;
-        // try
-        // {
-        //     // setup the messenger
-        //     $messenger = MessengerFactory::create('62.210.97.105', 32330, 'bbbbb');
-
-        //     // send a simple message
-        //     $response = $messenger->send('listplayers');
-        //     return $response; // a,b,c
-        // }
-        // catch (\Exception $e)
-        // {
-        //     return $e->getMessage();
-        // }
     }
 
-    public function start()
+    public function start( $id_server )
     {
-        $this->dispatch(new Server('start'));
+        $this->dispatch(new Server('start', $id_server));
     }
 
-    public function stop()
+    public function restart( $id_server )
     {
-        $this->dispatch(new Server('stop'));
+        $this->dispatch(new Server('stop', $id_server));
+        $this->dispatch(new Server('start', $id_server));
     }
 
-    public function update()
+    public function stop( $id_server )
     {
-        $this->dispatch(new Server('update'));
+        $this->dispatch(new Server('stop', $id_server));
+    }
+
+    public function update( $id_server )
+    {
+        $this->dispatch(new Server('update', $id_server));
     }
 
 }

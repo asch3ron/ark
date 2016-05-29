@@ -53,7 +53,8 @@ class Install extends Command
 			$ark_map  	= $this->ask('So, what is your ARK Map ?', 'TheIsland');
 			$ark_ip  	= $this->ask('What is your ARK server IP ?', '62.210.97.105');
 			$ark_port  	= $this->ask('What is your ARK server PORT ?', '7777');
-		   	$ark_name 	= $this->ask('What would be the name of your server ?', 'ARK Server');
+            $ark_name   = $this->ask('What would be the name of your server ?', 'ARK Server');
+            $is_sotf    = $this->confirm('Your server will be an SOTF mod ?', 'no');
 
 			$ark_str 	= PHP_EOL . PHP_EOL . "ARK_PATH=$ark_path" . PHP_EOL . "ARK_MAP=$ark_map" . PHP_EOL . "ARK_SERVER_IP=$ark_ip" . PHP_EOL . "ARK_SERVER_PORT=$ark_port" . PHP_EOL . PHP_EOL;
 
@@ -69,6 +70,8 @@ class Install extends Command
     		// save server into DB
     		$conf = \Ark\Models\Server::firstOrCreate([
                 'name'      => $ark_name,
+                'map'       => $ark_map,
+                'is_sotf'   => (int) $is_sotf,
                 'ip'      	=> $ark_ip,
                 'path'   	=> $ark_path,
                 'port'   	=> $ark_port

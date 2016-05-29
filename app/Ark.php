@@ -17,10 +17,8 @@ class Ark
 
 	CONST NO_CONNECTED = 'Connection failed.';
 
-	public function __construct()
+	public function __construct( $id_server )
 	{
-
-        $id_server      = 1;
         $this->_server  = \Ark\Models\Server::find( $id_server );
         // get password
 

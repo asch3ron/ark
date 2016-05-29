@@ -13,14 +13,15 @@ class ConfigurationController extends Controller {
      * @param  int  $id
      * @return Response
      */
-    public function all()
+    public function all( $id_server = null )
     {
         $all = DB::table('ark_configurations')
             ->leftJoin('ark_server_configuration', 'ark_server_configuration.id_configuration', '=', 'ark_configurations.id')
             ->select('ark_configurations.*', 'ark_server_configuration.value')
+            ->where('id_server',  (int) $id_server)
             ->get();
 
-        return view('configuration', ['configurations' => $all, 'id_server' => 1]);
+        return view('configuration', ['configurations' => $all, 'id_server' => $id_server]);
     }
 
     public function save($id_server, $id_configuration, $value)

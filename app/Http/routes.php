@@ -21,11 +21,13 @@ Route::get('/server', 'ServerController@all');
 Route::get('/players', 'ServerController@all');
 Route::get('/tribes', 'ServerController@all');
 
-Route::get('/server/restart', 'ServerController@restart');
-Route::get('/server/start', 'ServerController@start');
-Route::get('/server/stop', 'ServerController@stop');
-Route::get('/server/update', 'ServerController@update');
-Route::get('/server/status', 'ServerController@status');
+Route::get('/configuration/{id_server}', 'ConfigurationController@all')->where(['id_server' => '[0-9]+']);
+
+Route::get('/server/restart/{id_server}', 'ServerController@restart')->where(['id_server' => '[0-9]+']);
+Route::get('/server/start/{id_server}', 'ServerController@start')->where(['id_server' => '[0-9]+']);
+Route::get('/server/stop/{id_server}', 'ServerController@stop')->where(['id_server' => '[0-9]+']);
+Route::get('/server/update/{id_server}', 'ServerController@update')->where(['id_server' => '[0-9]+']);
+Route::get('/server/status/{id_server}', 'ServerController@status')->where(['id_server' => '[0-9]+']);
 
 Route::post('/configuration/save/{id_server}/{id_configuration}/{value}', 'ConfigurationController@save')
 ->where(['id_server' => '[0-9]+', 'id_configuration' => '[0-9]+']);
